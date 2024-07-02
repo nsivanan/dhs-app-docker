@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  nginx:
+    restart: always
+    image: dhs-bot-nginx
+    volumes:
+      -DHS_IT_BOT :/DHS_IT_BOT
+    ports:
+      - 80:80
+
+
+version: '3.8'
+services:
+  django:
+    restart: always
+    image: dhs-django-app-v1
+    container_name: dhs-django-app
+    #command: sh -c "python3 /DHS/dhs_api/manage.py runserver 0.0.0.0:8000 &"
+    ports:
+      - 8000:8000
+
+
+
+version: '3.8'
+services:
+  db:
+    image: aeries-bot-db-v1:${TAG}
+    build:
+      context: ./db-docker
+      dockerfile: Dockerfile
+    container_name: dhs-db-v1
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DATABASE_USER -d $DATABASE_NAME"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    restart: on-failure
+   
