@@ -1,0 +1,10 @@
+{
+  "routes": [
+    {
+      "route": "/*",
+      "headers": {
+        "X-Frame-Options": "ALLOW-FROM https://aeries.sharepoint.com/sites/PowerApps/"
+      }
+    }
+  ]
+}
