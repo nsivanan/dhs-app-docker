@@ -30,7 +30,7 @@ RUN python -c "import h5py; print('h5py version:', h5py.__version__)"
 #COPY . .
 EXPOSE 5005 5055
 #RUN tail -f /dev/null
-RUN pip install rasa
+RUN pip3 install rasa==3.6.20
 RUN printf "'\n'\nY\nn\n" | rasa init --no-prompt
 COPY /DHS/. /app/ 
 RUN rasa train

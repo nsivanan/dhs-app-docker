@@ -47,14 +47,14 @@ services:
     ports:
       - 80:80
 
-  rasa:
+  itbot:
     restart: always
-    image: dhs-rasa-v1:${TAG}
+    image: dhs-itbot-v1:${TAG}
     build:
-      context: ./rasa-docker
+      context: ./itbot-docker
       dockerfile: Dockerfile
-    container_name: dhs-rasa-v1
-    env_file: ./rasa-docker/.env
+    container_name: dhs-itbot-v1
+    env_file: ./itbot-docker/.env
     command: sh -c  " supervisord -c /etc/supervisor/conf.d/supervisord.conf "
     ports:
       - 5055:5055
