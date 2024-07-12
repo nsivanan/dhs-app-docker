@@ -1,10 +1,10 @@
 version: '3.8'
 services:
   dhs_db:
-    image: aeries-bot-db-v1:${TAG}
-    # build:
-    #   context: ./db-docker
-    #   dockerfile: Dockerfile
+    image: dhs-bot-db-v1:${TAG}
+    build:
+      context: ./db-docker
+      dockerfile: Dockerfile
     container_name: dhs-db-v1
     env_file: .env
     healthcheck:
@@ -22,9 +22,9 @@ services:
   django:
     restart: always
     image: dhs-django-app-v1:${TAG}
-    # build:
-    #   context: ./django-docker
-    #   dockerfile: Dockerfile
+    build:
+      context: ./django-docker
+      dockerfile: Dockerfile
     container_name: dhs-django-app-v1
     env_file: .env
     #command: sh -c "python3 /DHS/dhs_api/manage.py runserver 0.0.0.0:8000 &"
@@ -37,22 +37,22 @@ services:
       dhs_db:
         condition: service_healthy
 
-  # nginx:
-  #   restart: always
-  #   image: dhs-nginx-v1:${TAG}
-  #   build:
-  #     context: ./ui-docker
-  #     dockerfile: Dockerfile
-  #   container_name: dhs-nginx-v1
-  #   ports:
-  #     - 80:80
+  nginx:
+    restart: always
+    image: dhs-nginx-v1:${TAG}
+    build:
+      context: ./ui-docker
+      dockerfile: Dockerfile
+    container_name: dhs-nginx-v1
+    ports:
+      - 80:80
 
   itbot:
     restart: always
     image: dhs-itbot-v1:${TAG}
-    # build:
-    #   context: ./itbot-docker
-    #   dockerfile: Dockerfile
+    build:
+      context: ./itbot-docker
+      dockerfile: Dockerfile
     container_name: dhs-itbot-v1
     env_file: ./itbot-docker/.env
     command: sh -c  " supervisord -c /etc/supervisor/conf.d/supervisord.conf "
