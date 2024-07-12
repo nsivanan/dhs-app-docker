@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  dhs_db:
+    image: aeries-bot-db-v1:${TAG}
+    build:
+      context: ./db-docker
+      dockerfile: Dockerfile
+    container_name: dhs-db-v1
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DATABASE_USER -d $DATABASE_NAME"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    restart: on-failure
+  
+  
+  django:
+    restart: always
+    image: dhs-django-app-v1:${TAG}
+    build:
+      context: ./django-docker
+      dockerfile: Dockerfile
+    container_name: dhs-django-app-v1
+    env_file: .env
+    #command: sh -c "python3 /DHS/dhs_api/manage.py runserver 0.0.0.0:8000 &"
+    #command: sh -c "python3 /DHS/dhs_api/manage.py migrate --noinput &&  python3 /DHS/dhs_api/manage.py runserver 0.0.0.0:8000"
+    command: sh -c " python3 /DHS/dhs_api/manage.py runserver 0.0.0.0:8000 "
+    #command: tail -f /dev/null
+    ports:
+      - 8000:8000
+    depends_on:
+      dhs_db:
+        condition: service_healthy
+
+  nginx:
+    restart: always
+    image: dhs-nginx-v1:${TAG}
+    build:
+      context: ./ui-docker
+      dockerfile: Dockerfile
+    container_name: dhs-nginx-v1
+    ports:
+      - 80:80
+
+  itbot:
+    restart: always
+    image: dhs-itbot-v1:${TAG}
+    build:
+      context: ./itbot-docker
+      dockerfile: Dockerfile
+    container_name: dhs-itbot-v1
+    env_file: ./itbot-docker/.env
+    command: sh -c  " supervisord -c /etc/supervisor/conf.d/supervisord.conf "
+    ports:
+      - 5055:5055
+      - 5005:5005   
